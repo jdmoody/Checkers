@@ -64,12 +64,13 @@ class Piece
       landing_spot = vertically_sum(jumped_spot, diff)
       next unless landing_spot == end_pos
       
-      self.board[self.pos] = nil
-      self.board[jumped_spot].pos = nil
-      self.board[jumped_spot] = nil
+      board[jumped_spot].pos = nil
+      board[jumped_spot] = nil
+      
+      board[pos] = nil
       self.pos = end_pos
-      self.board[self.pos] = self
-      self.maybe_promote
+      board[end_pos] = self
+      maybe_promote
       return true
     end
     
@@ -94,7 +95,7 @@ class Piece
   end
   
   def render
-    (promoted ? "K" : "P").colorize(color)
+    (promoted ? " K " : " P ").colorize(color)
   end
   
   def valid?(pos)
