@@ -22,10 +22,20 @@ class Board
     @rows = Array.new(8) { Array.new(8) }
     
     if fill_board
-      [:red, :black].each do |color|
+      [:red, :white].each do |color|
         fill_pieces(color)
       end
     end
+  end
+  
+  def dup
+    copy = Board.new(false)
+    
+    pieces.each do |piece|
+      Piece.new(piece.pos, copy, piece.color)
+    end
+    
+    copy
   end
   
   def fill_pieces(color)
@@ -37,15 +47,24 @@ class Board
     end
   end
   
+  def pieces
+    @rows.flatten.compact
+  end
+  
   def render
-    @rows.map do |row|
-      row.map do |piece|
+    board = @rows.map.with_index do |row, idx|
+      "#{idx} " + row.map do |piece|
         piece.nil? ? "_" : piece.render
       end.join(" ")
     end.join("\n")
+    board = "  0 1 2 3 4 5 6 7\n" + board
   end
 end
 
-board = Board.new
-board[[2, 1]].perform_slide([3,2])
-puts board.render
+custom_board = Board.new(false)
+Piece.new([1, 1], custom_board, :red)
+Piece.new([3, 3], custom_board, :red)
+Piece.new([5, 5], custom_board, :red)
+Piece.new([6, 6], custom_board, :white)
+puts custom_board.render
+custom_board[[6, 6]].perform_moves([[4,4],[2,2],[0,0]])

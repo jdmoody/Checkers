@@ -1,3 +1,6 @@
+require 'colorize'
+require_relative 'checkers_errors'
+
 class Piece
   attr_reader :board, :color
   attr_accessor :pos, :promoted
@@ -8,8 +11,12 @@ class Piece
     board.add_piece(self, pos)
   end
   
+  def enemy?(pos)
+    board[pos].color != self.color
+  end
+  
   def maybe_promote
-    last_row = (color == :red ? 0 : 7)
+    last_row = (color == :red ? 7 : 0)
     self.promoted = true if self.pos[0] == last_row
   end
   
@@ -29,45 +36,45 @@ class Piece
     board[pos] == nil
   end
   
-  def perform_moves
-    # dup board
-    # duped_board.perform_moves!
-    # board.perform_moves!
+  def perform_moves(moves)
+    valid_move_seq?(moves) ? perform_moves!(moves) : (raise InvalidMoveError)
   end
   
-  def perform_moves!
-    # single valid slide
-    # single valid jumps
-    # multiple valid jumps
-    # tries to perform as much of sequence as possible
+  def perform_moves!(moves)
+    if moves.length == 1
+      unless self.perform_slide(moves.first)
+        raise InvalidMoveError unless self.perform_jump(moves.first)
+      end
+      
+    else
+      moves.each do |move|
+        raise InvalidMoveError unless self.perform_jump(move)
+      end
+    end
   end
   
-  # def perform_jump(end_pos)
-  #   return false unless self.valid?(end_pos)
-  #   
-  #   jumped = self.move_diffs
-  #   jumped_pos = jumped.map do |diff|
-  #     vertically_sum(self.pos, diff)
-  #   end
-  #   unless self.open?(jumped_position)
-  #     
-  #   diffs = jumped.map do |diff|
-  #     diff.map { |coord| coord * 2 }
-  #   end
-  #   end_moves = diffs.map do |diff|
-  #     vertically_sum(self.pos, diff)
-  #   end
-  #   return false unless end_moves.include?(end_pos)
-  #   
-  #   
-  #   
-  #   self.board[pos] = nil
-  #   self.pos = end_pos
-  #   self.board[pos] = self
-  #   
-  #   self.maybe_promote
-  #   true
-  # end
+  def perform_jump(end_pos)
+    return false unless self.valid?(end_pos)
+    
+    self.move_diffs.each do |diff|
+      jumped_spot = vertically_sum(self.pos, diff)
+      next if self.open?(jumped_spot)
+      next unless self.enemy?(jumped_spot)
+      
+      landing_spot = vertically_sum(jumped_spot, diff)
+      next unless landing_spot == end_pos
+      
+      self.board[self.pos] = nil
+      self.board[jumped_spot].pos = nil
+      self.board[jumped_spot] = nil
+      self.pos = end_pos
+      self.board[self.pos] = self
+      self.maybe_promote
+      return true
+    end
+    
+    false
+  end
   
   def perform_slide(end_pos)
     return false unless self.valid?(end_pos)
@@ -78,24 +85,31 @@ class Piece
     end
     return false unless end_moves.include?(end_pos)
     
-    self.board[pos] = nil
+    self.board[self.pos] = nil
     self.pos = end_pos
-    self.board[pos] = self
+    self.board[self.pos] = self
     
     self.maybe_promote
     true
   end
   
   def render
-    promoted ? "K" : "P"
+    (promoted ? "K" : "P").colorize(color)
   end
   
   def valid?(pos)
     self.on_board?(pos) && self.open?(pos)
   end
-  
-  def valid_jump?(pos)
-    
+
+  def valid_move_seq?(moves)
+    copy = self.board.dup
+    begin
+      copy[self.pos].perform_moves!(moves)
+    rescue InvalidMoveError
+      false
+    else
+      true
+    end
   end
   
   def vertically_sum(position, change)
