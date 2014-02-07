@@ -4,7 +4,7 @@ class Game
   attr_reader :board, :players, :current_player
   
   def initialize
-    @board = Board.new false
+    @board = Board.new
     @players = {
       :white => HumanPlayer.new(:white),
       :red   => HumanPlayer.new(:red)
