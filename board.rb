@@ -38,15 +38,6 @@ class Board
     copy
   end
   
-  def fill_pieces(color)
-    piece_rows = (color == :red ? [0, 1, 2] : [5, 6, 7])
-    piece_rows.each do |row|
-      8.times do |col| 
-        Piece.new([row, col], self, color) if (row + col) % 2 == 1
-      end
-    end
-  end
-  
   def pieces
     @rows.flatten.compact
   end
@@ -63,5 +54,15 @@ class Board
       end.join("")
     end.join("\n")
     board = "   0  1  2  3  4  5  6  7\n" + board
+  end
+  
+  private
+  def fill_pieces(color)
+    piece_rows = (color == :red ? [0, 1, 2] : [5, 6, 7])
+    piece_rows.each do |row|
+      8.times do |col| 
+        Piece.new([row, col], self, color) if (row + col) % 2 == 1
+      end
+    end
   end
 end

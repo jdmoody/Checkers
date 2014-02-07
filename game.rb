@@ -31,8 +31,7 @@ class Game
       switch_players
     end
     
-    declare_winner
-    
+    declare_winner  
   end
   
   def switch_players
