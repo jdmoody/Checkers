@@ -95,7 +95,7 @@ class Piece
   end
   
   def render
-    (promoted ? " K " : " P ").colorize(color)
+    (promoted ? " K " : " O ").colorize(color)
   end
   
   def valid?(pos)
