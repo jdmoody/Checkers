@@ -13,7 +13,7 @@ class Game
   end
   
   def declare_winner
-    puts board.render
+    board.print
     puts "#{current_player.capitalize} has no more pieces!"
     switch_players
     puts "#{current_player.capitalize} won!"
@@ -25,7 +25,7 @@ class Game
   
   def play
     until game_over?
-      puts board.render
+      board.print
       puts "#{current_player.capitalize}'s turn:"
       players[current_player].play_turn(board)
       switch_players

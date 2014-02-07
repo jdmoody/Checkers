@@ -42,8 +42,8 @@ class Piece
   
   def perform_moves!(moves)
     if moves.length == 1
-      unless self.perform_slide(moves.first)
-        raise InvalidMoveError unless self.perform_jump(moves.first)
+      unless perform_slide(moves.first) || perform_jump(moves.first)
+        raise InvalidMoveError
       end
       
     else
@@ -86,11 +86,11 @@ class Piece
     end
     return false unless end_moves.include?(end_pos)
     
-    self.board[self.pos] = nil
+    board[self.pos] = nil
     self.pos = end_pos
-    self.board[self.pos] = self
+    board[self.pos] = self
     
-    self.maybe_promote
+    maybe_promote
     true
   end
   

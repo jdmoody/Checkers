@@ -51,6 +51,10 @@ class Board
     @rows.flatten.compact
   end
   
+  def print
+    puts self.render
+  end
+  
   def render
     board = @rows.map.with_index do |row, idx1|
       "#{idx1} " + row.map.with_index do |piece, idx2|
