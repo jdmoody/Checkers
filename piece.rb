@@ -41,6 +41,7 @@ class Piece
   end
   
   def perform_moves!(moves)
+    originally_promoted = promoted
     if moves.length == 1
       unless perform_slide(moves.first) || perform_jump(moves.first)
         raise InvalidMoveError
@@ -48,6 +49,7 @@ class Piece
       
     else
       moves.each do |move|
+        raise PromotionError unless originally_promoted == self.promoted
         raise InvalidMoveError unless self.perform_jump(move)
       end
     end
@@ -108,6 +110,9 @@ class Piece
       copy[self.pos].perform_moves!(moves)
     rescue InvalidMoveError
       false
+    # rescue PromotionError
+    #   puts "You can't move after becoming a King!"
+    #   false
     else
       true
     end

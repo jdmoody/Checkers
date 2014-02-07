@@ -4,7 +4,7 @@ class Game
   attr_reader :board, :players, :current_player
   
   def initialize
-    @board = Board.new
+    @board = Board.new false
     @players = {
       :white => HumanPlayer.new(:white),
       :red   => HumanPlayer.new(:red)
@@ -62,6 +62,9 @@ class HumanPlayer
       retry
     rescue InvalidMoveError
       puts "Invalid move"
+      retry
+    rescue PromotionError
+      puts "You can't move after promoting a piece!"
       retry
     rescue
       puts "Invalid coordinates"
